@@ -110,50 +110,80 @@ document.addEventListener('DOMContentLoaded', function () {
     // Previous JS implementation was removing src if data-src wasn't present.
 
     // ============================================
-    // 6. Contact Form Logic (Simulation)
+    // 6. Contact Form Logic (Formspree Integration)
     // ============================================
     const contactForm = document.getElementById('contactForm');
 
     if (contactForm) {
-        contactForm.addEventListener('submit', function (e) {
+        contactForm.addEventListener('submit', async function (e) {
             e.preventDefault();
 
             // 1. Get Values
             const name = document.getElementById('name').value;
             const email = document.getElementById('email').value;
-            const projectType = document.getElementById('project-type').value;
             const button = contactForm.querySelector('button[type="submit"]');
             const originalText = button.textContent;
 
-            // 2. Simulate Loading
+            // 2. Show Loading State
             button.disabled = true;
             button.textContent = 'Enviando...';
 
-            // 3. Simulate Server Request (2 seconds)
-            setTimeout(() => {
-                // Success
-                console.log('✅ Formulario enviado con éxito:', { name, email, projectType });
+            try {
+                // 3. Send to Formspree
+                const formData = new FormData(contactForm);
+                const response = await fetch(contactForm.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'Accept': 'application/json'
+                    }
+                });
 
-                // UI Feedback
-                button.textContent = '¡Mensaje Enviado!';
-                button.style.backgroundColor = '#10B981'; // Success Green
-                button.style.borderColor = '#10B981';
+                if (response.ok) {
+                    // Success
+                    console.log('✅ Formulario enviado con éxito');
 
-                // Reset Form
-                contactForm.reset();
+                    // UI Feedback
+                    button.textContent = '¡Mensaje Enviado! ✓';
+                    button.style.backgroundColor = '#10B981'; // Success Green
+                    button.style.borderColor = '#10B981';
 
-                // Alert (Simple feedback for now)
-                alert(`¡Gracias ${name}! He recibido tu solicitud. Te escribiré a ${email} en menos de 24 horas.`);
+                    // Reset Form
+                    contactForm.reset();
+
+                    // Alert (Simple feedback)
+                    alert(`¡Gracias ${name}! He recibido tu solicitud. Te escribiré a ${email} en menos de 24 horas.`);
+
+                    // Reset Button after delay
+                    setTimeout(() => {
+                        button.disabled = false;
+                        button.textContent = originalText;
+                        button.style.backgroundColor = ''; // Reset to CSS default
+                        button.style.borderColor = '';
+                    }, 5000);
+                } else {
+                    // Error from Formspree
+                    throw new Error('Error al enviar el formulario');
+                }
+
+            } catch (error) {
+                // Error handling
+                console.error('❌ Error al enviar:', error);
+
+                button.textContent = '❌ Error al enviar';
+                button.style.backgroundColor = '#EF4444'; // Error Red
+                button.style.borderColor = '#EF4444';
+
+                alert('Hubo un error al enviar el formulario. Por favor, inténtalo de nuevo o contáctame directamente por email o WhatsApp.');
 
                 // Reset Button after delay
                 setTimeout(() => {
                     button.disabled = false;
                     button.textContent = originalText;
-                    button.style.backgroundColor = ''; // Reset to CSS default
+                    button.style.backgroundColor = '';
                     button.style.borderColor = '';
-                }, 5000);
-
-            }, 2000);
+                }, 3000);
+            }
         });
     }
 
