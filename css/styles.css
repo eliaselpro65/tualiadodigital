@@ -1608,17 +1608,13 @@ section {
         --space-24: var(--space-16);
     }
 
-    /* Navbar Optimization for Mobile */
+    /* Navbar Optimization for Mobile - Keep navbar-links visible for hamburger */
     .navbar-links {
         gap: var(--space-3);
+        display: flex; /* Ensure it stays visible */
     }
 
-    /* Hide standard navigation links on mobile to prevent overcrowding */
-    .nav-link {
-        display: none;
-    }
-
-    /* Show only Logo and CTA */
+    /* Show only Logo and hamburger button on mobile in narrow screens */
     .navbar-container {
         padding: 0 var(--space-4);
     }
@@ -1972,6 +1968,7 @@ section {
         width: 280px;
         height: calc(100vh - 70px);
         background: var(--primary);
+        display: flex !important; /* Force display to ensure menu shows when active */
         flex-direction: column;
         align-items: flex-start;
         padding: var(--space-8);
@@ -1986,6 +1983,7 @@ section {
     }
 
     .navbar-menu .nav-link {
+        display: block !important; /* Override the hidden state from smaller breakpoints */
         width: 100%;
         font-size: var(--font-size-lg);
         padding: var(--space-3) 0;
